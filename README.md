@@ -12,5 +12,5 @@
 
 3. 默认每天 UTC 时间 16：30 运行一次，可修改以下文件第 7 行的 cron 表达式自行调整
 
-[github 工作流配置文件](./.github/workflows\auto_fork.yml)
+[github 工作流配置文件](./.github/workflows/auto_fork.yml)
 

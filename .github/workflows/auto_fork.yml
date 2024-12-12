@@ -1,0 +1,47 @@
+
+name: Build and Test .NET Console App
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '8.0.x' # 使用您需要的 .NET 版本
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build the project
+      run: dotnet build --configuration Release --no-restore
+
+    # - name: Run tests
+    #   run: dotnet test --no-build --verbosity normal
+
+    - name: Publish the application
+      run: dotnet publish -c Release -o ./publish
+      
+    - name: Check if required secrets are set
+      id: check-secrets
+      run: |
+        echo "::set-output name=has_secrets::true"
+        if [ -z "${{ secrets.starUser }}" ] || [ -z "${{ secrets.forkToken }}" ]; then
+          echo "Missing required secrets! starUser forkToken"
+          echo "::set-output name=has_secrets::false"
+        fi
+
+    - name: Run the console app with arguments
+      if: steps.check-secrets.outputs.has_secrets == 'true'
+      run: |
+        cd ./publish
+        dotnet AutoFork.dll --starUser ${{ secrets.starUser }} --forkToken ${{ secrets.forkToken }} --enableLog ${{ secrets.enableLog }} --logRepo ${{ secrets.logRepo }}

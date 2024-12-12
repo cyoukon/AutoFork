@@ -2,8 +2,9 @@
 name: Build and Test .NET Console App
 
 on:
-  push:
-    branches: [ "main" ]
+  schedule:
+    # 每天16:30 UTC (即次日00:30 CST)
+    - cron: '30 16 * * *'
 
 jobs:
   build:

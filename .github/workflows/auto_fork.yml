@@ -2,6 +2,7 @@
 name: Build and Test .NET Console App
 
 on:
+  workflow_dispatch: # 允许通过GitHub UI或API手动触发此工作流
   schedule:
     # 每天16:30 UTC (即次日00:30 CST)
     - cron: '30 16 * * *'

@@ -151,7 +151,12 @@ namespace AutoFork
             }
             var userResp = await _httpClient.GetAsync("user");
             string userRespBody = await userResp.Content.ReadAsStringAsync();
-            userResp.EnsureSuccessStatusCode();
+            if (!userResp.IsSuccessStatusCode)
+            {
+                Console.WriteLine("GET: user");
+                Console.WriteLine(userRespBody);
+                throw new HttpRequestException(userResp.StatusCode.ToString());
+            }
             var userName = JsonNode.Parse(userRespBody)?["login"]?.ToString();
 
             var createRepoUrl = "user/repos";
@@ -159,15 +164,21 @@ namespace AutoFork
             {
                 name = _options.LogRepo
             }));
+            Console.WriteLine($"POST: {createRepoUrl}");
+            Console.WriteLine(createRepoResp.StatusCode.ToString());
 
             var now = DateTime.Now;
             var url = $"repos/{userName}/{_options.LogRepo}/contents/Logs{now:yyyyMM}/{now:yyyy-MM-dd_HH-mm-ss}.log";
             var content = Convert.ToBase64String(Encoding.UTF8.GetBytes(string.Join(Environment.NewLine, _log)));
-            var logResp = await _httpClient.PostAsync(url, JsonContent.Create(new
+            var logResp = await _httpClient.PutAsync(url, JsonContent.Create(new
             {
-                message = "auto commit log by github action.",
-                content
+                message = $"[{now:yyyy-MM-dd_HH-mm-ss}] auto commit log by github action.",
+                content,
+                visibility = "private",
+                @private = true
             }));
+            Console.WriteLine($"PUT {url}");
+            Console.WriteLine(logResp.StatusCode);
             logResp.EnsureSuccessStatusCode();
         }
 

@@ -20,10 +20,13 @@ namespace AutoFork
         {
             await using var githubClient = new GithubApiClient(option);
             var starredRepos = await githubClient.GetStarredReposAsync(option.StarListUser);
-            foreach (var repo in starredRepos)
+            for (int i = 0; i < starredRepos.Count; i++)
             {
+                string repo = starredRepos[i];
                 await githubClient.ForkRepositoryAsync(repo);
+                Console.WriteLine($"第{i + 1}个仓库 Fork 完成：{repo}");
             }
+            Console.WriteLine("done!");
         }
     }
 }

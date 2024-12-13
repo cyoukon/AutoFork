@@ -121,7 +121,10 @@ namespace AutoFork
                 WriteLog(message);
                 var respBody = await resp.Content.ReadAsStringAsync();
                 WriteLog(respBody);
-                throw new HttpRequestException(message);
+                if (resp.StatusCode != HttpStatusCode.NotFound)
+                {
+                    throw new HttpRequestException(message);
+                }
             }
             WriteLog(message);
         }

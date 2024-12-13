@@ -19,14 +19,43 @@ namespace AutoFork
         private static async Task Run(Options option)
         {
             await using var githubClient = new GithubApiClient(option);
+
+            var history = await githubClient.GetHistoryAsync() ?? new Dictionary<string, RespModels.HistoryModel>();
+
             var starredRepos = await githubClient.GetStarredReposAsync(option.StarListUser);
-            for (int i = 0; i < starredRepos.Count; i++)
+
+            var count = 0;
+            var skipCount = 0;
+            try
             {
-                string repo = starredRepos[i];
-                await githubClient.ForkRepositoryAsync(repo);
-                Console.WriteLine($"第{i + 1}个仓库 Fork 完成：{repo}");
+                foreach (var (key, value) in starredRepos)
+                {
+                    count++;
+                    history.TryGetValue(key, out var historyModel);
+
+                    if (historyModel != null && historyModel.ForkedAt >= value)
+                    {
+                        Console.WriteLine($"第{count}个仓库未更新，无需 Fork：{key}。仓库更新时间：{value}，上次 Fork 时间：{historyModel?.ForkedAt}");
+                        skipCount++;
+                        continue;
+                    }
+
+                    await githubClient.ForkRepositoryAsync(key);
+                    Console.WriteLine($"第{count}个仓库 Fork 完成：{key}。仓库更新时间：{value}，上次 Fork 时间：{historyModel?.ForkedAt}");
+                    history[key] = new RespModels.HistoryModel
+                    {
+                        RepoFullName = key,
+                        UpdatedAt = value,
+                        ForkedAt = DateTime.UtcNow,
+                    };
+                }
             }
-            Console.WriteLine("done!");
+            finally
+            {
+                Console.WriteLine($"执行完毕，共 {count} 个仓库，其中 {skipCount} 无需 Fork");
+                Console.WriteLine("done!");
+                await githubClient.UpdateHistoryAsync(history);
+            }
         }
     }
 }

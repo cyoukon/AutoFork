@@ -12,6 +12,13 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env: # 定义全局环境变量
+      forkToken: ${{ secrets.forkToken }} # 使用 GitHub Secrets 来存储敏感信息
+      starUser: cyoukon
+      enableLog: true
+      logRepo: AutoForkLog
+      minUpdatehHourInterval: 24
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -46,4 +53,4 @@ jobs:
       if: steps.check-secrets.outputs.has_secrets == 'true'
       run: |
         cd ./publish
-        dotnet AutoFork.dll --starUser ${{ secrets.starUser }} --forkToken ${{ secrets.forkToken }} --enableLog ${{ secrets.enableLog }} --logRepo ${{ secrets.logRepo }} --minUpdatehHourInterval ${{ secrets.minUpdatehHourInterval }}
+        dotnet AutoFork.dll

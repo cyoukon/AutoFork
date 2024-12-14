@@ -1,19 +1,11 @@
-﻿using CommandLine;
-
+﻿
 namespace AutoFork
 {
     internal class Program
     {
         static async Task Main(string[] args)
         {
-            var parser = Parser.Default.ParseArguments<Options>(args);
-            await parser.WithParsedAsync(Run);
-            await parser.WithNotParsedAsync(OnPraseError);
-        }
-
-        private static Task OnPraseError(IEnumerable<Error> errors)
-        {
-            return Task.CompletedTask;
+            await Run(Options.Init());
         }
 
         private static async Task Run(Options option)

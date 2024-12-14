@@ -1,5 +1,5 @@
 
-name: Build and Test .NET Console App
+name: Build and Run .NET Console App
 
 on:
   workflow_dispatch: # 允许通过GitHub UI或API手动触发此工作流
@@ -40,15 +40,6 @@ jobs:
     - name: Publish the application
       run: dotnet publish -c Release -o ./publish
       
-    - name: Check if required secrets are set
-      id: check-secrets
-      run: |
-        echo "::set-output name=has_secrets::true"
-        if [ -z "${{ secrets.starUser }}" ] || [ -z "${{ secrets.forkToken }}" ]; then
-          echo "Missing required secrets! starUser forkToken"
-          echo "::set-output name=has_secrets::false"
-        fi
-
     - name: Run the console app with arguments
       if: steps.check-secrets.outputs.has_secrets == 'true'
       run: |

@@ -15,5 +15,8 @@ namespace AutoFork
 
         [Option("logRepo", Default = "AutoForkLog", HelpText = "日志仓库名")]
         public required string LogRepo { get; set; }
+
+        [Option("minUpdatehHourInterval", Default = 0, HelpText = "最小更新时间间隔（单位：时）")]
+        public double MinimumUpdateHourInterval { get; set; }
     }
 }

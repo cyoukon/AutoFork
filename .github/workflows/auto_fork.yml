@@ -46,4 +46,4 @@ jobs:
       if: steps.check-secrets.outputs.has_secrets == 'true'
       run: |
         cd ./publish
-        dotnet AutoFork.dll --starUser ${{ secrets.starUser }} --forkToken ${{ secrets.forkToken }} --enableLog ${{ secrets.enableLog }} --logRepo ${{ secrets.logRepo }}
+        dotnet AutoFork.dll --starUser ${{ secrets.starUser }} --forkToken ${{ secrets.forkToken }} --enableLog ${{ secrets.enableLog }} --logRepo ${{ secrets.logRepo }} --minUpdatehHourInterval ${{ secrets.minUpdatehHourInterval }}

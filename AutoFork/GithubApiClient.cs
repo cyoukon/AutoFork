@@ -134,7 +134,7 @@ namespace AutoFork
             return $"{url}?{string.Join('&', queryParameters.Select(p => $"{p.Key}={p.Value}"))}";
         }
 
-        private void WriteLog(string msg, Exception ex = null)
+        public void WriteLog(string msg, Exception ex = null)
         {
             Console.WriteLine(msg);
             _log.Add($"【{DateTime.UtcNow:HH-mm-ss_ffff}】{msg}");
@@ -174,7 +174,7 @@ namespace AutoFork
 
         private async Task<string> GetCurrentUserNameAsync()
         {
-            if (!string.IsNullOrWhiteSpace( _userName))
+            if (!string.IsNullOrWhiteSpace(_userName))
             {
                 return _userName;
             }
@@ -197,7 +197,7 @@ namespace AutoFork
             {
                 return null;
             }
-            var url = $"repos/{await GetCurrentUserNameAsync()}/{_options.LogRepo}/readme";
+            var url = $"repos/{await GetCurrentUserNameAsync()}/{_options.LogRepo}/contents/history.json";
             try
             {
                 var readmeJson = await _httpClient.GetStringAsync(url);
@@ -205,7 +205,7 @@ namespace AutoFork
                 _historySha = jNode["sha"].ToString();
                 var readme = jNode["content"].ToString();
                 var readmeDecoded = Encoding.UTF8.GetString(Convert.FromBase64String(readme));
-                var history = JsonSerializer.Deserialize< Dictionary<string, HistoryModel>>(readmeDecoded);
+                var history = JsonSerializer.Deserialize<Dictionary<string, HistoryModel>>(readmeDecoded);
                 return history;
             }
             catch (Exception ex)
@@ -231,10 +231,13 @@ namespace AutoFork
             Console.WriteLine($"POST: {createRepoUrl}");
             Console.WriteLine(createRepoResp.StatusCode.ToString());
 
-            var hsitoryJson = JsonSerializer.Serialize(history);
+            var hsitoryJson = JsonSerializer.Serialize(history, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
             var content = Convert.ToBase64String(Encoding.UTF8.GetBytes(hsitoryJson));
 
-            var url = $"repos/{await GetCurrentUserNameAsync()}/{_options.LogRepo}/contents/README.md";
+            var url = $"repos/{await GetCurrentUserNameAsync()}/{_options.LogRepo}/contents/history.json";
             var resp = await _httpClient.PutAsync(url, JsonContent.Create(new
             {
                 message = $"[{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}] update readme log.",

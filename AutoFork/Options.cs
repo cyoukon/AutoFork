@@ -21,6 +21,9 @@ namespace AutoFork
         [Option("minUpdatehHourInterval", Default = 0, HelpText = "最小更新时间间隔（单位：时）")]
         public double MinimumUpdateHourInterval { get; set; }
 
+        [Option("excluded", Default = "", HelpText = "排除的仓库名，支持正则")]
+        public required string ExcludedRepo { get; set; }
+
         public static Options Init()
         {
             var type = typeof(Options);

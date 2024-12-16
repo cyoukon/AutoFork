@@ -1,4 +1,6 @@
 ﻿
+using System.Text.RegularExpressions;
+
 namespace AutoFork
 {
     internal class Program
@@ -24,7 +26,14 @@ namespace AutoFork
                 foreach (var (key, value) in starredRepos)
                 {
                     count++;
+
                     history.TryGetValue(key, out var historyModel);
+
+                    if (!string.IsNullOrEmpty(option.ExcludedRepo) && Regex.IsMatch(key, option.ExcludedRepo))
+                    {
+                        githubClient.WriteLog($"第{count}个仓库命中排除规则，" +
+                            $"无需 Fork：{key}。仓库更新时间：{value}，上次 Fork 时间：{historyModel?.ForkedAt}");
+                    }
 
                     if (historyModel != null)
                     {

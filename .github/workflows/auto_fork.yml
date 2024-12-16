@@ -13,11 +13,18 @@ jobs:
     runs-on: ubuntu-latest
 
     env: # 定义全局环境变量
-      forkToken: ${{ secrets.forkToken }} # 使用 GitHub Secrets 来存储敏感信息
-      starUser: cyoukon
-      enableLog: true
-      logRepo: AutoForkLog
-      minUpdatehHourInterval: 24
+      # 用于 Fork 的用户 token
+      forkToken: ${{ secrets.forkToken }}
+      # 需要查询关注列表的用户
+      starUser: ${{ secrets.starUser }}
+      # 是否启用日志，如果不配置则默认为 true
+      enableLog: ${{ secrets.enableLog || 'true' }}
+      # 日志仓库名，如果不配置则默认为 AutoForkLog
+      logRepo: ${{ secrets.logRepo || 'AutoForkLog' }}
+      # 最小更新时间间隔（单位：时），如果不配置则默认为 0
+      minUpdatehHourInterval: ${{ secrets.minUpdatehHourInterval || '0' }}
+      # 排除的仓库名，支持正则
+      excluded: ${{ secrets.excluded || 'cyoukon/.*' }}
 
     steps:
     - name: Checkout repository

@@ -33,6 +33,8 @@ namespace AutoFork
                     {
                         githubClient.WriteLog($"第{count}个仓库命中排除规则，" +
                             $"无需 Fork：{key}。仓库更新时间：{value}，上次 Fork 时间：{historyModel?.ForkedAt}");
+                        skipCount++;
+                        continue;
                     }
 
                     if (historyModel != null)

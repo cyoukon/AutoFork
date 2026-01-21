@@ -18,13 +18,13 @@ jobs:
       # 需要查询关注列表的用户
       starUser: ${{ secrets.starUser }}
       # 是否启用日志，如果不配置则默认为 true
-      enableLog: ${{ secrets.enableLog || 'true' }}
+      enableLog: ${{ vars.enableLog || 'true' }}
       # 日志仓库名，如果不配置则默认为 AutoForkLog
-      logRepo: ${{ secrets.logRepo || 'AutoForkLog' }}
+      logRepo: ${{ vars.logRepo || 'AutoForkLog' }}
       # 最小更新时间间隔（单位：时），如果不配置则默认为 0
-      minUpdatehHourInterval: ${{ secrets.minUpdatehHourInterval || '0' }}
+      minUpdatehHourInterval: ${{ vars.minUpdatehHourInterval || '0' }}
       # 排除的仓库名，支持正则
-      excluded: ${{ secrets.excluded || 'cyoukon/.*' }}
+      excluded: ${{ vars.excluded || 'cyoukon/.*' }}
 
     steps:
     - name: Checkout repository
